@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import { db } from "@/db/client";
-import { categories, dishes, orderItems, orders, tables, venues, type Category, type Dish } from "@/db/schema";
+import { categories, dishInterest, dishes, orderItems, orders, tables, venues, type Category, type Dish } from "@/db/schema";
 
 export async function findTableByToken(token: string) {
   const [row] = await db()
@@ -59,4 +59,17 @@ export async function hitDishIds(venueId: string, limit = 6, now = new Date()): 
   const ids = [...pinned.map((p) => p.id)];
   for (const t of top) if (t.id && !ids.includes(t.id)) ids.push(t.id);
   return ids.slice(0, limit);
+}
+
+// Counts a dish put into "My selection"; only dishes of the table's own venue.
+export async function recordInterest(tableToken: string, dishId: string) {
+  const found = await findTableByToken(tableToken);
+  if (!found) return false;
+  const [dish] = await db()
+    .select({ id: dishes.id })
+    .from(dishes)
+    .where(and(eq(dishes.id, dishId), eq(dishes.venueId, found.venue.id)));
+  if (!dish) return false;
+  await db().insert(dishInterest).values({ venueId: found.venue.id, dishId });
+  return true;
 }

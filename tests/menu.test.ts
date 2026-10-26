@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/db/client";
-import { dishes, orderItems, orders, tableVisits, tables, venues, type Venue } from "@/db/schema";
-import { findTableByToken, guestMenu, hitDishIds } from "@/server/menu";
+import { dishInterest, dishes, orderItems, orders, tableVisits, tables, venues, type Venue } from "@/db/schema";
+import { findTableByToken, guestMenu, hitDishIds, recordInterest } from "@/server/menu";
 import { pick } from "@/lib/i18n";
 import { freshDemo } from "./helpers";
 
@@ -63,5 +63,15 @@ describe("guest menu", () => {
     expect(pick("ky", "Плов", "Палоо")).toBe("Палоо");
     expect(pick("ky", "Плов", null)).toBe("Плов");
     expect(pick("ru", "Плов", "Палоо")).toBe("Плов");
+  });
+
+  it("records interest only for the table's own venue dishes", async () => {
+    const [table] = await db().select().from(tables).limit(1);
+    const [dish] = await db().select().from(dishes).limit(1);
+    expect(await recordInterest(table.token, dish.id)).toBe(true);
+    const [other] = await db().insert(venues).values({ slug: "o", name: "O" }).returning();
+    const [otherTable] = await db().insert(tables).values({ venueId: other.id, number: 1, token: "ot" }).returning();
+    expect(await recordInterest(otherTable.token, dish.id)).toBe(false);
+    expect(await db().select().from(dishInterest)).toHaveLength(1);
   });
 });

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { GuestMenu } from "@/components/guest/guest-menu";
+import { GuestApp } from "@/components/guest/guest-app";
 import type { GuestDish, GuestMenuData } from "@/components/guest/types";
 import { LANG_COOKIE, parseLang, pick } from "@/lib/i18n";
 import { findTableByToken, guestMenu, hitDishIds } from "@/server/menu";
@@ -57,5 +57,5 @@ export default async function TableMenuPage({ params }: { params: Promise<{ toke
     hitIds: hitIds.filter((id) => dishes.some((d) => d.id === id)),
   };
 
-  return <GuestMenu data={data} />;
+  return <GuestApp data={data} />;
 }

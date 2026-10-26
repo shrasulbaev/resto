@@ -49,8 +49,8 @@ const MENU: { ru: string; ky: string; dishes: DishSeed[] }[] = [
     ky: "Суусундуктар",
     dishes: [
       { nameRu: "Чай чёрный", nameKy: "Кара чай", price: 165, weight: "0,5 л", kcal: 0 },
-      { nameRu: "Вода 0,5", nameKy: "Суу 0,5", price: 140, weight: "0,5 л", kcal: 0 },
-      { nameRu: "Айран", nameKy: "Айран", price: 150, weight: "0,3 л", kcal: 110, allergens: ["молоко"] },
+      { nameRu: "Вода 0,5", nameKy: "Суу 0,5", price: 140, weight: "0,5 л", kcal: 0, tags: ["self"] },
+      { nameRu: "Айран", nameKy: "Айран", price: 150, weight: "0,3 л", kcal: 110, allergens: ["молоко"], tags: ["self"] },
     ],
   },
 ];

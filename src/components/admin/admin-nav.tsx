@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export const ADMIN_NAV = [
+  { href: "/admin/stats", label: "Статистика" },
   { href: "/admin/menu", label: "Меню" },
   { href: "/admin/tables", label: "Столы и QR" },
   { href: "/admin/staff", label: "Персонал" },

@@ -177,6 +177,7 @@ export async function closeBill(venueId: string, staffId: string, visitId: strin
     .set({ status: "done", doneAt: now })
     .where(and(eq(calls.visitId, visit.id), inArray(calls.status, ["new", "accepted"])));
   await closeVisit(visit, "paid", now);
+  if (order) await publish(venueId, { type: "bill_closed", orderId: order.id, tableId: visit.tableId });
   return { total, orderId: order?.id ?? null };
 }
 

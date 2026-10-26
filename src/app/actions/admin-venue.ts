@@ -5,6 +5,7 @@ import {
   addTables, createStaff, deleteTable, reissueQr, renumberTable, saveBranding, saveSettings, setWaiterTables, updateStaff,
 } from "@/server/admin-venue";
 import { requireOwner } from "@/server/session";
+import { newLinkCode, unlinkChat } from "@/server/telegram";
 
 const done = () => revalidatePath("/admin", "layout");
 
@@ -72,4 +73,17 @@ export async function saveBrandingAction(data: unknown) {
   const ok = await saveBranding(s.venueId, data);
   done();
   return ok;
+}
+
+export async function telegramCodeAction() {
+  const s = await requireOwner();
+  const code = await newLinkCode(s.venueId);
+  done();
+  return code;
+}
+
+export async function telegramUnlinkAction() {
+  const s = await requireOwner();
+  await unlinkChat(s.venueId);
+  done();
 }

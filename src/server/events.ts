@@ -6,6 +6,7 @@ export type VenueEvent =
   | { type: "table"; tableId: string }
   | { type: "order"; orderId: string; tableId: string }
   | { type: "item_ready"; orderId: string; tableId: string; itemId: string }
+  | { type: "alert"; kind: "no_response"; tableId: string }
   | { type: "menu" };
 
 export const CHANNEL = "resto_events";

@@ -12,7 +12,8 @@ import type { GuestMenuData } from "./types";
 type CallType = "waiter" | "bill" | "container" | "other";
 type CallExtra = { payment?: "cash" | "card"; comment?: string; withSelection?: boolean };
 
-const POLL_MS = 5000;
+// Live updates come over SSE; the slow poll only covers a dropped stream.
+const POLL_MS = 30_000;
 
 // Polls the table state and sends guest calls. The visit key lives in
 // localStorage so a reload keeps the phone attached to its visit.
@@ -57,12 +58,23 @@ export function useTableCalls(token: string) {
     const tick = setInterval(() => setNow(Date.now()), 1000);
     const onVisible = () => document.visibilityState === "visible" && refresh();
     document.addEventListener("visibilitychange", onVisible);
+    const es = typeof EventSource !== "undefined" ? new EventSource(`/api/t/${token}/events`) : null;
+    if (es) {
+      es.onmessage = (m) => {
+        try {
+          if (JSON.parse(m.data).type === "table") refresh();
+        } catch {}
+      };
+      // Catch up on anything missed while the stream was reconnecting.
+      es.onopen = () => refresh();
+    }
     return () => {
+      es?.close();
       clearInterval(poll);
       clearInterval(tick);
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [refresh]);
+  }, [refresh, token]);
 
   const call = useCallback(
     async (type: CallType, extra: CallExtra, selection: SelectionApi) => {

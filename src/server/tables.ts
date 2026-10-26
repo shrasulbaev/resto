@@ -5,6 +5,7 @@ import {
   staff,
   tableVisits,
   tables,
+  venues,
   type Call,
   type CallPayload,
   type TableVisit,
@@ -104,6 +105,7 @@ export async function sweepVenue(venue: Venue, now = new Date()) {
     .where(and(eq(tableVisits.venueId, venue.id), eq(tableVisits.status, "pending"), lte(tableVisits.openedAt, pendingDeadline)));
   for (const v of pending) {
     await closeVisit(v, "no_response", now);
+    await publish(venue.id, { type: "alert", kind: "no_response", tableId: v.tableId });
     unanswered.push(v);
   }
   const idleDeadline = new Date(now.getTime() - venue.autoCloseHours * 3600 * 1000);
@@ -113,6 +115,12 @@ export async function sweepVenue(venue: Venue, now = new Date()) {
     .where(and(eq(tableVisits.venueId, venue.id), eq(tableVisits.status, "open"), lte(tableVisits.lastActivityAt, idleDeadline)));
   for (const v of idle) await closeVisit(v, "timeout", now);
   return { unanswered };
+}
+
+// Background sweep for every venue that has a pending or open table.
+export async function sweepAll(now = new Date()) {
+  const rows = await db().selectDistinct({ venue: venues }).from(tableVisits).innerJoin(venues, eq(venues.id, tableVisits.venueId)).where(ACTIVE_VISIT);
+  for (const { venue } of rows) await sweepVenue(venue, now);
 }
 
 async function buildState(venue: Venue, tableId: string, key: string | null, now: Date): Promise<GuestState> {

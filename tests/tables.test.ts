@@ -135,3 +135,18 @@ describe("table states and calls", () => {
     await reloadVenue();
   });
 });
+
+describe("background sweep", () => {
+  beforeEach(async () => {
+    venue = await freshDemo();
+    [table] = await db().select().from(tables).where(eq(tables.number, 5));
+  });
+
+  it("closes unanswered tables of every venue", async () => {
+    const { sweepAll } = await import("@/server/tables");
+    await guestCall(table.token, { type: "waiter" }, T0);
+    await sweepAll(at(16));
+    const [t] = await db().select().from(tables).where(eq(tables.id, table.id));
+    expect(t.status).toBe("closed");
+  });
+});

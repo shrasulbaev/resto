@@ -41,8 +41,13 @@ export default async function WaiterHome({ searchParams }: { searchParams: Promi
       {tab === "calls" ? (
         <section className="flex flex-col gap-3">
           {ready > 0 && (
-            <div className="rounded-2xl border border-ok/40 bg-ok/10 px-4 py-3 text-sm font-semibold text-ok">
-              Готово к выдаче: {myTables.filter((t) => t.readyCount > 0).map((t) => `стол ${t.number} (${t.readyCount})`).join(", ")}
+            <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-ok/40 bg-ok/10 px-4 py-3 text-sm font-semibold text-ok">
+              Готово к выдаче:
+              {myTables.filter((t) => t.readyCount > 0).map((t) => (
+                <Link key={t.id} href={`/waiter/t/${t.id}`} className="rounded-full bg-ok px-2.5 py-1 font-extrabold text-bg">
+                  стол {t.number} · {t.readyCount}
+                </Link>
+              ))}
             </div>
           )}
           {board.calls.length === 0 && <p className="py-16 text-center text-muted">Новых вызовов нет</p>}

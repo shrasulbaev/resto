@@ -7,6 +7,7 @@ export const ADMIN_NAV = [
   { href: "/admin/menu", label: "Меню" },
   { href: "/admin/tables", label: "Столы и QR" },
   { href: "/admin/staff", label: "Персонал" },
+  { href: "/admin/branding", label: "Оформление" },
   { href: "/admin/settings", label: "Настройки" },
 ];
 

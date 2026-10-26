@@ -159,3 +159,16 @@ export async function saveSettings(venueId: string, raw: unknown) {
   await publish(venueId, { type: "menu" });
   return { ok: true as const };
 }
+
+// Branding: each venue sets only its logo and menu background.
+
+const upload = z.string().regex(/^\/uploads\/[A-Za-z0-9_-]+\.webp$/).nullable();
+export const brandingInput = z.object({ logoUrl: upload, backgroundUrl: upload, backgroundDim: z.coerce.number().int().min(0).max(90) });
+
+export async function saveBranding(venueId: string, raw: unknown) {
+  const p = brandingInput.safeParse(raw);
+  if (!p.success) return false;
+  await db().update(venues).set(p.data).where(eq(venues.id, venueId));
+  await publish(venueId, { type: "menu" });
+  return true;
+}

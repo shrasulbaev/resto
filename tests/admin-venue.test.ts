@@ -83,3 +83,18 @@ describe("admin tables, staff, settings", () => {
     expect(v2.opensAt).toBeNull();
   });
 });
+
+describe("branding", () => {
+  beforeEach(async () => {
+    venue = await freshDemo();
+  });
+
+  it("accepts only uploaded images and a sane dim", async () => {
+    const { saveBranding } = await import("@/server/admin-venue");
+    expect(await saveBranding(venue.id, { logoUrl: "/uploads/abc_D-1.webp", backgroundUrl: null, backgroundDim: 60 })).toBe(true);
+    const [v] = await db().select().from(venues).where(eq(venues.id, venue.id));
+    expect(v).toMatchObject({ logoUrl: "/uploads/abc_D-1.webp", backgroundUrl: null, backgroundDim: 60 });
+    expect(await saveBranding(venue.id, { logoUrl: "javascript:alert(1)", backgroundUrl: null, backgroundDim: 60 })).toBe(false);
+    expect(await saveBranding(venue.id, { logoUrl: null, backgroundUrl: null, backgroundDim: 100 })).toBe(false);
+  });
+});

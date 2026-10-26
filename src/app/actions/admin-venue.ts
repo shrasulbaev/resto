@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import {
-  addTables, createStaff, deleteTable, reissueQr, renumberTable, saveSettings, setWaiterTables, updateStaff,
+  addTables, createStaff, deleteTable, reissueQr, renumberTable, saveBranding, saveSettings, setWaiterTables, updateStaff,
 } from "@/server/admin-venue";
 import { requireOwner } from "@/server/session";
 
@@ -65,4 +65,11 @@ export async function saveSettingsAction(data: unknown) {
   const r = await saveSettings(s.venueId, data);
   done();
   return r;
+}
+
+export async function saveBrandingAction(data: unknown) {
+  const s = await requireOwner();
+  const ok = await saveBranding(s.venueId, data);
+  done();
+  return ok;
 }

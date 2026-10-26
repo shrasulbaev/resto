@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+/* Palette from the approved dark mockups. */
+:root {
+  --bg: #0f1012;
+  --surface: #181a1d;
+  --surface-2: #22252a;
+  --line: #2c3036;
+  --text: #f4f1ea;
+  --muted: #a4a9b1;
+  --accent: #f0b44c;
+  --accent-ink: #1a1405;
+  --info: #7fb2ff;
+  --ok: #9bd1a8;
+  --warn: #e8c547;
+  --danger: #ff7a6b;
+  --photo: #2a2620;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-info: var(--info);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-photo: var(--photo);
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  font-family: var(--font-manrope), system-ui, sans-serif;
+}

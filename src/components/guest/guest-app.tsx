@@ -10,6 +10,7 @@ import { GuestMenu } from "./guest-menu";
 import type { GuestDish, GuestMenuData } from "./types";
 
 const NORM_KEY = "resto:kcal-norm";
+export const SELECTION_RESET = "resto:selection-reset";
 
 export type SelectionApi = {
   items: SelectionItem[];
@@ -40,6 +41,12 @@ export function GuestApp({
       setNorm(n > 0 ? n : null);
     } catch {}
   }, [key]);
+
+  useEffect(() => {
+    const reset = () => setItems([]);
+    window.addEventListener(SELECTION_RESET, reset);
+    return () => window.removeEventListener(SELECTION_RESET, reset);
+  }, []);
 
   const save = (next: SelectionItem[]) => {
     setItems(next);

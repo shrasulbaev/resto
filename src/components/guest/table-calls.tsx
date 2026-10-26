@@ -7,7 +7,7 @@ import { BagIcon, BellIcon, ChatIcon, CloseIcon, ReceiptIcon } from "@/component
 import { fill, t, type Lang } from "@/lib/i18n";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
 import type { GuestState } from "@/server/tables";
-import { GuestApp, type SelectionApi } from "./guest-app";
+import { GuestApp, SELECTION_RESET, type SelectionApi } from "./guest-app";
 import type { GuestMenuData } from "./types";
 
 type CallType = "waiter" | "bill" | "container" | "other";
@@ -42,16 +42,28 @@ export function useTableCalls(token: string) {
         else if (s.table === "closed") localStorage.removeItem(storageKey);
       } catch {}
       if (before?.mine && before.table === "pending" && s.table === "closed") setNotice("noResponse");
+      // The bill was closed: start the next visit with an empty selection.
+      if (before?.mine && before.table === "open" && s.table === "closed") {
+        try {
+          localStorage.removeItem(`resto:sel:${token}`);
+        } catch {}
+        window.dispatchEvent(new Event(SELECTION_RESET));
+      }
       prev.current = s;
       setState(s);
     },
-    [storageKey],
+    [storageKey, token],
   );
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (): Promise<void> => {
     const key = readKey();
     const res = await fetch(`/api/t/${token}/state${key ? `?key=${encodeURIComponent(key)}` : ""}`, { cache: "no-store" }).catch(() => null);
-    if (res?.ok) apply(await res.json());
+    if (!res?.ok) return;
+    const state = (await res.json()) as GuestState;
+    // A call finished while this request was in flight and gave us a key:
+    // this answer was computed without it, so ask again.
+    if (readKey() !== key) return refresh();
+    apply(state);
   }, [token, readKey, apply]);
 
   useEffect(() => {

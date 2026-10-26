@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export const ADMIN_NAV = [{ href: "/admin/menu", label: "Меню" }];
+export const ADMIN_NAV = [
+  { href: "/admin/menu", label: "Меню" },
+  { href: "/admin/tables", label: "Столы и QR" },
+  { href: "/admin/staff", label: "Персонал" },
+  { href: "/admin/settings", label: "Настройки" },
+];
 
 export function AdminNav() {
   const path = usePathname();

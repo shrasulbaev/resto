@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 import { BagIcon, BellIcon, ChatIcon, CloseIcon, ReceiptIcon } from "@/components/icons";
 import { fill, t, type Lang } from "@/lib/i18n";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
@@ -19,6 +20,7 @@ const POLL_MS = 30_000;
 // localStorage so a reload keeps the phone attached to its visit.
 export function useTableCalls(token: string) {
   const storageKey = `resto:visit:${token}`;
+  const router = useRouter();
   const [state, setState] = useState<GuestState | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
@@ -62,7 +64,10 @@ export function useTableCalls(token: string) {
     if (es) {
       es.onmessage = (m) => {
         try {
-          if (JSON.parse(m.data).type === "table") refresh();
+          const type = JSON.parse(m.data).type;
+          if (type === "table") refresh();
+          // Stop-list or price changes show up without a reload.
+          if (type === "menu") router.refresh();
         } catch {}
       };
       // Catch up on anything missed while the stream was reconnecting.
@@ -74,7 +79,7 @@ export function useTableCalls(token: string) {
       clearInterval(tick);
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [refresh, token]);
+  }, [refresh, token, router]);
 
   const call = useCallback(
     async (type: CallType, extra: CallExtra, selection: SelectionApi) => {

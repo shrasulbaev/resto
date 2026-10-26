@@ -10,6 +10,8 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "resto",
   description: "QR-меню с вызовом официанта",
+  appleWebApp: { capable: true, title: "resto", statusBarStyle: "black-translucent" },
+  icons: { apple: "/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {

@@ -59,6 +59,16 @@ export async function subscribe(venueId: string, fn: (e: VenueMessage) => void) 
   };
 }
 
+// Every venue's events, for server-side notifiers.
+export async function subscribeAll(fn: (e: VenueMessage) => void) {
+  await ensureListening();
+  const h = hub();
+  h.emitter.on("event", fn);
+  return () => {
+    h.emitter.off("event", fn);
+  };
+}
+
 export async function stopListening() {
   const h = hub();
   const c = h.client;

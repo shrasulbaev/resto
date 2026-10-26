@@ -1,5 +1,7 @@
 import { LogoutButton } from "@/components/logout-button";
 import { AdminNav } from "@/components/admin/admin-nav";
+import { PushToggle } from "@/components/push-toggle";
+import { env } from "@/lib/env";
 import { db } from "@/db/client";
 import { venues } from "@/db/schema";
 import { requireOwner } from "@/server/session";
@@ -19,6 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
         <LogoutButton />
       </header>
+      <PushToggle publicKey={env().VAPID_PUBLIC_KEY ?? null} />
       <AdminNav />
       {children}
     </div>

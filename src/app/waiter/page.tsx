@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { LiveRefresh } from "@/components/live-refresh";
 import { LogoutButton } from "@/components/logout-button";
+import { PushToggle } from "@/components/push-toggle";
+import { env } from "@/lib/env";
 import { CallCard } from "@/components/waiter/call-card";
 import { formatSom } from "@/lib/i18n";
 import { requireStaff } from "@/server/session";
@@ -28,6 +30,8 @@ export default async function WaiterHome({ searchParams }: { searchParams: Promi
         </div>
         <LogoutButton />
       </header>
+
+      <PushToggle publicKey={env().VAPID_PUBLIC_KEY ?? null} />
 
       <nav className="grid grid-cols-2 gap-1 rounded-2xl bg-surface p-1">
         <Tab href="/waiter" active={tab === "calls"}>

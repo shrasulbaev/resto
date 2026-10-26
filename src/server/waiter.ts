@@ -137,6 +137,18 @@ export async function waiterBoard(venueId: string, staffId: string, now = new Da
   return { mode: ctx.venue.assignmentMode, tables: boardTables, calls: boardCalls };
 }
 
+// Waiters who should be told about a new call right now.
+export async function callAudience(venueId: string, call: Call, now = new Date()) {
+  const active = await db()
+    .select({ id: staff.id })
+    .from(staff)
+    .where(and(eq(staff.venueId, venueId), eq(staff.role, "waiter"), eq(staff.active, true)));
+  const ctx = await loadCtx(venueId, "", now);
+  if (!ctx) return [];
+  const escalatedCall = { ...call, createdAt: call.escalated ? new Date(0) : call.createdAt };
+  return active.map((s) => s.id).filter((id) => canSee({ ...ctx, staffId: id }, escalatedCall));
+}
+
 // Accepting is refused when the call is not this waiter's to take yet.
 export async function acceptCallAsWaiter(venueId: string, staffId: string, callId: string, now = new Date()) {
   const ctx = await loadCtx(venueId, staffId, now);

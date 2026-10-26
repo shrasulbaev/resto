@@ -3,6 +3,8 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs" || process.env.NODE_ENV === "test") return;
   const { sweepAll } = await import("@/server/tables");
+  const { startNotifier } = await import("@/server/notify");
+  startNotifier().catch((e) => console.error("notifier failed to start", e));
   const g = globalThis as unknown as { sweeper?: NodeJS.Timeout };
   if (g.sweeper) return;
   g.sweeper = setInterval(() => {

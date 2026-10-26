@@ -114,6 +114,23 @@ export async function sweepVenue(venue: Venue, now = new Date()) {
     .from(tableVisits)
     .where(and(eq(tableVisits.venueId, venue.id), eq(tableVisits.status, "open"), lte(tableVisits.lastActivityAt, idleDeadline)));
   for (const v of idle) await closeVisit(v, "timeout", now);
+
+  // Assigned mode: a call nobody took in time goes to every waiter.
+  if (venue.assignmentMode === "assigned") {
+    const late = await db()
+      .update(calls)
+      .set({ escalated: true })
+      .where(
+        and(
+          eq(calls.venueId, venue.id),
+          eq(calls.status, "new"),
+          eq(calls.escalated, false),
+          lte(calls.createdAt, new Date(now.getTime() - venue.escalateAfterSec * 1000)),
+        ),
+      )
+      .returning();
+    for (const c of late) await publish(venue.id, { type: "call", callId: c.id, tableId: c.tableId, escalated: true });
+  }
   return { unanswered };
 }
 

@@ -2,7 +2,7 @@ import { pool } from "@/db/client";
 
 // Venue events fan out to waiter/kitchen/admin screens and to guest phones.
 export type VenueEvent =
-  | { type: "call"; callId: string; tableId: string }
+  | { type: "call"; callId: string; tableId: string; escalated?: boolean }
   | { type: "table"; tableId: string }
   | { type: "order"; orderId: string; tableId: string }
   | { type: "item_ready"; orderId: string; tableId: string; itemId: string }

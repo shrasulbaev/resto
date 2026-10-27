@@ -13,7 +13,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
-    "vapid": "web-push generate-vapid-keys"
+    "vapid": "web-push generate-vapid-keys",
+    "build:seed": "esbuild scripts/seed-demo.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/seed-demo.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -39,6 +40,7 @@
     "@types/web-push": "^3.6.4",
     "dotenv": "^18.0.9",
     "drizzle-kit": "^0.31.11",
+    "esbuild": "^0.28.2",
     "eslint": "^9",
     "eslint-config-next": "15.5.28",
     "tailwindcss": "^4",

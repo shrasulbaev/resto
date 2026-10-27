@@ -18,6 +18,7 @@ let cached: Env | undefined;
 
 // Read lazily so `next build` works without a database configured.
 export function env(): Env {
-  cached ??= schema.parse(process.env);
+  // Render and similar hosts give the public URL in their own variable.
+  cached ??= schema.parse({ ...process.env, APP_URL: process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || undefined });
   return cached;
 }

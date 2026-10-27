@@ -14,7 +14,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+RUN npm run build && npm run build:seed
 
 FROM node:22-alpine AS runner
 WORKDIR /app
@@ -26,6 +26,7 @@ COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
 COPY --from=build /app/drizzle ./drizzle
 COPY --from=build /app/scripts/start.mjs ./scripts/start.mjs
+COPY --from=build /app/dist ./dist
 USER app
 EXPOSE 3000
 VOLUME /data

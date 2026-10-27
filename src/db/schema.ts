@@ -288,3 +288,9 @@ export type Category = typeof categories.$inferSelect;
 export type Dish = typeof dishes.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type OrderItem = typeof orderItems.$inferSelect;
+
+// Server-wide values generated on first start (e.g. Web Push keys when none are configured).
+export const appSettings = pgTable("app_settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+});
